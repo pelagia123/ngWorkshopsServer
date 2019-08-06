@@ -59,7 +59,7 @@ app.post('/items', (req, res) => {
     if (err) {
       res.status(500).send('not saved in database')
     } else {
-      res.status(201).send(result.ops[0]);
+      res.status(201).send(result);
       console.log('saved to database');
     }
   });
@@ -71,7 +71,7 @@ app.put('/items/:id', (req, res) => {
       if (err) {
         res.status(500).send('not saved in database')
       } else {
-        res.status(201).send(result.ops[0]);
+        res.status(201).send(result);
         console.log('saved to database');
       }
     });
