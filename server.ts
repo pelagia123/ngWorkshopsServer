@@ -1,8 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
-// const cors = require('cors');
-//
+
 const MongoClient = require('mongodb').MongoClient;
 const mongodb = require('mongodb');
 
@@ -13,13 +12,18 @@ if (!connection_string) {
   console.log('no connection string for db provided');
   process.exit(1)
 }
-//
+
 let db;
 let itemsCollection;
 
-// app.use(cors);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
+app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT,DELETE");
+  res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+  next();
+});
 
 app.all('/*', function (req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');
@@ -31,10 +35,8 @@ app.get('/', (request, response) => {
 });
 
 app.get('/items', (req, res) => {
-  console.log('get all');
   itemsCollection.find({}).toArray((err, result) => {
     if (err) {
-      console.log(`error!`);
       res.status(404).send('we have faiced some issues');
     } else {
       res.status(200).send(result)
@@ -53,8 +55,6 @@ app.get('/items/:id', (req, res) => {
 });
 
 app.post('/items', (req, res) => {
-  console.log(`post na item`, req.body);
-
   itemsCollection.insertOne(req.body, (err, result) => {
     if (err) {
       res.status(500).send('not saved in database')
@@ -67,7 +67,7 @@ app.post('/items', (req, res) => {
 
 app.put('/items/:id', (req, res) => {
   itemsCollection.updateOne({_id: new ObjectID(req.params.id.toString())},
-    { $set: { "item" : req.body.item } }, (err, result) => {
+    { $set: { "title" : req.body.title, "completed": req.body.completed } }, (err, result) => {
       if (err) {
         res.status(500).send('not saved in database')
       } else {
