@@ -2,6 +2,19 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
 
+/**
+ * read from environment variables from file
+ */
+const dotenv = require('dotenv');
+dotenv.config()
+
+/**
+ * Swagger configuration. 
+ */
+const swaggerUi = require('swagger-ui-express');
+const swaggerDocument = require('./swagger.json');
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
 const MongoClient = require('mongodb').MongoClient;
 const mongodb = require('mongodb');
 
